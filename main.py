@@ -1,5 +1,5 @@
-
-from fastapi import FastAPI
+from pydantic import BaseModel
+from fastapi import FastAPI, HTTPException
 
 app = FastAPI()
 
@@ -14,3 +14,24 @@ def info():
         "level": 1,
         "author": "Egor"
     }
+
+class StatisticsInput(BaseModel):
+    values: list[float]
+@app.post("/preview")
+def preview(data: StatisticsInput):
+    values = data.values
+    if len(values) == 0:
+        raise HTTPException(status_code=400, detail="Список значений пуст")
+
+    count = len(values)
+    minimum = min(values)
+    maximum = max(values)
+    average = sum(values) / count
+
+    return {
+        "count": count,
+        "min": minimum,
+        "max": maximum,
+        "mean": average
+    }
+
