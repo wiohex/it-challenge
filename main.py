@@ -1,5 +1,7 @@
+import csv
+from io import StringIO
 from pydantic import BaseModel
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, UploadFile, File
 
 app = FastAPI()
 
@@ -27,11 +29,33 @@ def preview(data: StatisticsInput):
     minimum = min(values)
     maximum = max(values)
     average = sum(values) / count
-    
+
     return {
         "count": count,
         "min": minimum,
         "max": maximum,
         "mean": average
+    }
+
+
+
+
+@app.post("/upload")
+async def upload(file: UploadFile = File(), column: str = "age"):
+    content = await file.read()
+    text = content.decode("utf-8")
+
+    reader = csv.DictReader(StringIO(text))
+    rows = list(reader)
+    values = []
+
+    for row in rows:
+        value = float(row[column])
+        values.append(value)
+
+    return {
+        "filename": file.filename,
+        "column": column,
+        "values": values
     }
 
