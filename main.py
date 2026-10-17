@@ -27,7 +27,7 @@ def preview(data: StatisticsInput):
     minimum = min(values)
     maximum = max(values)
     average = sum(values) / count
-
+    
     return {
         "count": count,
         "min": minimum,
