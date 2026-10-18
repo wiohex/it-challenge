@@ -46,12 +46,22 @@ async def upload(file: UploadFile = File(), column: str = "age"):
     text = content.decode("utf-8")
 
     reader = csv.DictReader(StringIO(text))
+
+    if not reader.fieldnames:
+        raise HTTPException(status_code=400, detail=f"CSV файл пуст")
+    
+    if column not in reader.fieldnames:
+        raise HTTPException(status_code=400, detail=f"Столбец '{column}' не найден в CSV")
+    
+    
     rows = list(reader)
     values = []
 
     for row in rows:
         value = float(row[column])
         values.append(value)
+    if len(values) == 0:
+        raise HTTPException(status_code=400, detail=f"Столбец '{column}' не содержит числовых значений")
 
     count = len(values)
     minimum = min(values)
