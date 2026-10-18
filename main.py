@@ -58,7 +58,9 @@ async def upload(file: UploadFile = File(), column: str = "age"):
     values = []
 
     for row in rows:
-        value = float(row[column])
+        try:
+            value = float(row[column])
+        except ValueError: raise HTTPException(status_code=400, detail=f"Значение '{row[column]}' в столбце '{column}' не является числом")
         values.append(value)
     if len(values) == 0:
         raise HTTPException(status_code=400, detail=f"Столбец '{column}' не содержит числовых значений")
