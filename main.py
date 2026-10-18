@@ -53,9 +53,18 @@ async def upload(file: UploadFile = File(), column: str = "age"):
         value = float(row[column])
         values.append(value)
 
+    count = len(values)
+    minimum = min(values)
+    maximum = max(values)
+    mean = sum(values) / count
+
     return {
         "filename": file.filename,
         "column": column,
-        "values": values
+        "result": {
+            "count": count,
+            "min": minimum,
+            "max": maximum,
+            "mean": mean
+        }
     }
-
